@@ -6,22 +6,21 @@ import hello.core.discount.RateDiscountPolicy;
 import hello.core.member.Member;
 import hello.core.member.MemberRepository;
 import hello.core.member.MemoryMemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.amqp.RabbitTemplateConfigurer;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OrderServiceImpl implements OrderService {
 
     private final MemberRepository memberRepository;
     private final DiscountPolicy discountPolicy;
 
+    @Autowired
     public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
     }
-//    private final MemberRepository memberRepository = new MemoryMemberRepository();
-//
-////    private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
-////    private final DiscountPolicy discountPolicy = new RateDiscountPolicy();
-//    private DiscountPolicy discountPolicy;  // 그러나.... 구현체에 의존하지 않은 지금.. 당연히 null pointer exception.
 
     @Override
     public Order createOrder(Long memberId, String itemName, int itemPrice) {
@@ -29,5 +28,10 @@ public class OrderServiceImpl implements OrderService {
         int discountPrice = discountPolicy.discount(member, itemPrice);
 
         return new Order(memberId, itemName, itemPrice, discountPrice);
+    }
+
+    //테스트 용도
+    public MemberRepository getMemberRepository() {
+        return memberRepository;
     }
 }
